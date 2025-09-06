@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
     const cartModal = document.getElementById('cart-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
-    const checkoutButton = document.getElementById('checkout-btn'); // This line is crucial
+    // We get the checkout button later, since it's created dynamically
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartTotalElement = document.getElementById('cart-total');
     const cartCountElement = document.getElementById('cart-count');
@@ -59,27 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.remove-item-btn').forEach(button => {
             button.addEventListener('click', handleRemoveItem);
         });
+        
+        // --- FIX: Attach checkout listener AFTER the button is created ---
+        const checkoutButton = document.getElementById('checkout-btn');
+        if (checkoutButton) {
+            checkoutButton.addEventListener('click', handleCheckout);
+        }
     }
 
-    function handleRemoveItem(event) {
-        const itemIndex = parseInt(event.target.getAttribute('data-index'));
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cart.splice(itemIndex, 1);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        populateCartModal();
-    }
-
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cartCountElement.textContent = cart.length;
-    }
-    
-    // --- Add event listeners for the modal and checkout ---
-    cartIcon.addEventListener('click', openCartModal);
-    closeModalBtn.addEventListener('click', closeCartModal);
-
-    checkoutButton.addEventListener('click', () => {
+    // --- NEW: Moved checkout logic to its own function ---
+    function handleCheckout() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const line_items = cart.map(item => {
             return {
@@ -103,7 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
             successUrl: `${baseUrl}/success.html`,
             cancelUrl: `${baseUrl}/cancel.html`,
         });
-    });
+    }
+
+    function handleRemoveItem(event) {
+        const itemIndex = parseInt(event.target.getAttribute('data-index'));
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.splice(itemIndex, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        populateCartModal();
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cartCountElement.textContent = cart.length;
+    }
+    
+    // --- Event Listeners ---
+    cartIcon.addEventListener('click', openCartModal);
+    closeModalBtn.addEventListener('click', closeCartModal);
 
     // --- DYNAMIC DATA: FETCHING FROM API ---
     async function fetchProductData() {
