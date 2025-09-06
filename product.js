@@ -22,8 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModalBtn.addEventListener('click', closeCartModal);
 
     // --- THE TEST IS HERE ---
+// Find this event listener in product.js and replace it
+
     checkoutButton.addEventListener('click', () => {
-        console.log("Checkout button clicked! Attempting to redirect to Stripe...");
+        // This now simply redirects to our own checkout page
+        window.location.href = 'checkout.html';
+    });
 
         // We are ignoring the real cart and using simple, hardcoded data.
         const test_line_items = [{
