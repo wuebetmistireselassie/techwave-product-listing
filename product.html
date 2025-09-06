@@ -3,65 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechWave Gadgets - Dynamic Showcase</title>
+    <title>TechWave - Product Details</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-    
+
     <header class="bg-white shadow-md">
         <div class="container mx-auto p-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800">TechWave</h1>
-            <div class="relative">
+            <a href="index.html" class="text-2xl font-bold text-gray-800">TechWave</a>
+            <div class="relative cursor-pointer">
                 <i class="fas fa-shopping-cart text-2xl text-gray-600"></i>
                 <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
             </div>
         </div>
     </header>
-    <div class="container mx-auto mt-10 p-4">
 
     <div class="container mx-auto mt-10 p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-8 rounded-lg shadow-lg">
 
             <div class="product-gallery">
                 <div class="main-image mb-4">
-                    <img id="main-product-image" src="" alt="Main product view" class="w-full rounded-lg">
+                    <img id="main-product-image" src="" alt="Loading product image..." class="w-full h-96 object-contain rounded-lg">
                 </div>
                 <div class="thumbnails flex space-x-2">
-                    <img src="images/thumbnail-1.jpg" alt="Thumbnail 1" class="thumbnail w-1/4 cursor-pointer border-2 border-transparent rounded-md" data-full="images/thumbnail-1.jpg">
-                    <img src="images/thumbnail-2.jpg" alt="Thumbnail 2" class="thumbnail w-1/4 cursor-pointer border-2 border-transparent rounded-md" data-full="images/thumbnail-2.jpg">
-                    <img src="images/thumbnail-3.jpg" alt="Thumbnail 3" class="thumbnail w-1/4 cursor-pointer border-2 border-transparent rounded-md" data-full="images/thumbnail-3.jpg">
-                </div>
+                    </div>
             </div>
 
-            <div class="product-details">
+            <div class="product-details flex flex-col">
                 <h1 id="product-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Loading Product...</h1>
-                <div class="flex items-center mb-4">
-                    <div class="text-yellow-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <span class="text-gray-500 ml-2">(Fetching reviews...)</span>
-                </div>
-                <p id="product-description" class="text-gray-600 mb-6">
-                    Please wait while we fetch the latest product details.
+                <p id="product-description" class="text-gray-600 mb-6 mt-4 flex-grow">
+                    Please wait while we fetch the product details.
                 </p>
                 <p id="product-price" class="text-4xl font-bold text-gray-900 mb-6"></p>
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Color</h3>
-                    <div class="flex space-x-2">
-                        <span class="w-8 h-8 bg-black rounded-full cursor-pointer border-2 border-blue-500"></span>
-                        <span class="w-8 h-8 bg-gray-300 rounded-full cursor-pointer border-2"></span>
-                        <span class="w-8 h-8 bg-blue-800 rounded-full cursor-pointer border-2"></span>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 mt-auto">
                     <div class="quantity-selector flex items-center border border-gray-300 rounded-lg">
                         <button id="btn-minus" class="px-4 py-2 text-lg font-bold">-</button>
                         <span id="quantity-display" class="px-4 py-2">1</span>
@@ -75,26 +52,25 @@
         </div>
     </div>
 
-   <script src="product.js"></script>
-
     <div id="cart-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
                 <h2 class="text-2xl font-bold">Your Cart</h2>
-                <button id="close-modal-btn" class="text-2xl font-bold">&times;</button>
+                <button id="close-modal-btn" class="text-2xl font-bold leading-none hover:text-red-500">&times;</button>
             </div>
-            <div id="cart-items-container" class="space-y-4">
+            
+            <div id="cart-items-container" class="space-y-4 max-h-80 overflow-y-auto">
                 </div>
-            <div class="mt-6 text-right">
+
+            <div class="mt-6 pt-4 border-t text-right">
                 <p class="text-xl font-bold">Total: <span id="cart-total">$0.00</span></p>
+                <button id="checkout-btn" class="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-400">
+                    Proceed to Checkout
+                </button>
             </div>
-<div class="mt-6 text-right">
-    <p class="text-xl font-bold">Total: <span id="cart-total">$0.00</span></p>
-    <button id="checkout-btn" class="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
-        Proceed to Checkout
-    </button>
-    </div>
         </div>
     </div>
-    </body>
+    
+    <script src="product.js"></script>
+</body>
 </html>
