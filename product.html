@@ -13,7 +13,7 @@
     <header class="bg-white shadow-md">
         <div class="container mx-auto p-4 flex justify-between items-center">
             <a href="index.html" class="text-2xl font-bold text-gray-800">TechWave</a>
-            <div class="relative cursor-pointer">
+            <div id="cart-icon-wrapper" class="relative cursor-pointer">
                 <i class="fas fa-shopping-cart text-2xl text-gray-600"></i>
                 <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
             </div>
@@ -22,31 +22,22 @@
 
     <div class="container mx-auto mt-10 p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-8 rounded-lg shadow-lg">
-
             <div class="product-gallery">
                 <div class="main-image mb-4">
                     <img id="main-product-image" src="" alt="Loading product image..." class="w-full h-96 object-contain rounded-lg">
                 </div>
-                <div class="thumbnails flex space-x-2">
-                    </div>
             </div>
-
             <div class="product-details flex flex-col">
                 <h1 id="product-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Loading Product...</h1>
-                <p id="product-description" class="text-gray-600 mb-6 mt-4 flex-grow">
-                    Please wait while we fetch the product details.
-                </p>
+                <p id="product-description" class="text-gray-600 mb-6 mt-4 flex-grow">Please wait...</p>
                 <p id="product-price" class="text-4xl font-bold text-gray-900 mb-6"></p>
-
                 <div class="flex items-center space-x-4 mt-auto">
                     <div class="quantity-selector flex items-center border border-gray-300 rounded-lg">
                         <button id="btn-minus" class="px-4 py-2 text-lg font-bold">-</button>
                         <span id="quantity-display" class="px-4 py-2">1</span>
                         <button id="btn-plus" class="px-4 py-2 text-lg font-bold">+</button>
                     </div>
-                    <button id="add-to-cart-btn" class="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-                        Add to Cart
-                    </button>
+                    <button id="add-to-cart-btn" class="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700">Add to Cart</button>
                 </div>
             </div>
         </div>
@@ -58,13 +49,10 @@
                 <h2 class="text-2xl font-bold">Your Cart</h2>
                 <button id="close-modal-btn" class="text-2xl font-bold leading-none hover:text-red-500">&times;</button>
             </div>
-            
-            <div id="cart-items-container" class="space-y-4 max-h-80 overflow-y-auto">
-                </div>
-
+            <div id="cart-items-container" class="space-y-4 max-h-80 overflow-y-auto"></div>
             <div class="mt-6 pt-4 border-t text-right">
                 <p class="text-xl font-bold">Total: <span id="cart-total">$0.00</span></p>
-                <button id="checkout-btn" class="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-400">
+                <button id="checkout-btn" class="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600">
                     Proceed to Checkout
                 </button>
             </div>
