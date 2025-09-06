@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Stripe Setup ---
     const stripe = Stripe('pk_test_51S4RkX6P8IFPS9iHyfDjDb04RhvAh8Ch0nIR0eOy4zRRlvoGDpPP0zq0TywzuinNxLEjlU0kgqsodti0pNX7xZ9900CbqPUtb3');
-
-    // --- Element Selectors ---
     const mainImage = document.getElementById('main-product-image');
     const cartIcon = document.getElementById('cart-icon-wrapper');
     const cartModal = document.getElementById('cart-modal');
@@ -18,12 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const minusBtn = document.getElementById('btn-minus');
     const quantityDisplay = document.getElementById('quantity-display');
     const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-    // --- State Variables ---
     let currentProduct = {};
     let quantity = 1;
-
-    // --- URL Parameter Logic ---
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     if (!productId) {
@@ -31,15 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- Functions ---
-    function openCartModal() {
-        populateCartModal();
-        cartModal.classList.remove('hidden');
-    }
-
-    function closeCartModal() {
-        cartModal.classList.add('hidden');
-    }
+    function openCartModal() { populateCartModal(); cartModal.classList.remove('hidden'); }
+    function closeCartModal() { cartModal.classList.add('hidden'); }
 
     function populateCartModal() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -51,20 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
             cart.forEach((item, index) => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'flex justify-between items-center border-b pb-2 text-sm';
-                itemElement.innerHTML = `
-                    <img src="${item.image}" class="w-12 h-12 object-contain mr-2">
-                    <span class="font-semibold flex-grow">${item.title.substring(0, 25)}...</span>
-                    <span class="mx-2">${item.quantity} x $${item.price}</span>
-                    <button class="remove-item-btn text-red-500 hover:text-red-700 font-bold" data-index="${index}">&times;</button>
-                `;
+                itemElement.innerHTML = `<img src="${item.image}" class="w-12 h-12 object-contain mr-2"><span class="font-semibold flex-grow">${item.title.substring(0, 25)}...</span><span class="mx-2">${item.quantity} x $${item.price}</span><button class="remove-item-btn text-red-500 hover:text-red-700 font-bold" data-index="${index}">&times;</button>`;
                 cartItemsContainer.appendChild(itemElement);
                 total += item.price * item.quantity;
             });
         }
         cartTotalElement.textContent = `$${total.toFixed(2)}`;
-        document.querySelectorAll('.remove-item-btn').forEach(button => {
-            button.addEventListener('click', handleRemoveItem);
-        });
+        document.querySelectorAll('.remove-item-btn').forEach(button => { button.addEventListener('click', handleRemoveItem); });
     }
 
     function handleRemoveItem(event) {
@@ -90,50 +69,37 @@ document.addEventListener('DOMContentLoaded', () => {
             productDescription.textContent = currentProduct.description;
             productPrice.textContent = `$${currentProduct.price}`;
             mainImage.src = currentProduct.image;
+            // --- THE FIX IS HERE: Enable the button only after data is loaded ---
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Add to Cart';
+            addToCartBtn.classList.remove('bg-gray-400');
+            addToCartBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
         } catch (error) {
             console.error('Error fetching product data:', error);
             productTitle.textContent = 'Failed to load product details.';
         }
     }
 
-    // --- Event Listeners ---
     cartIcon.addEventListener('click', openCartModal);
     closeModalBtn.addEventListener('click', closeCartModal);
 
     checkoutButton.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const line_items = cart.map(item => ({
-            price_data: {
-                currency: 'usd',
-                product_data: { name: item.title, images: [item.image] },
-                unit_amount: Math.round(item.price * 100),
-            },
+            price_data: { currency: 'usd', product_data: { name: item.title, images: [item.image] }, unit_amount: Math.round(item.price * 100), },
             quantity: item.quantity,
         }));
-        
         const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-
-        // --- THE FIX IS HERE ---
-        // The parameter must be 'lineItems', not 'line_items' or 'items'.
         stripe.redirectToCheckout({
-            lineItems: line_items, // Corrected from 'line_items'
+            lineItems: line_items,
             mode: 'payment',
             successUrl: `${baseUrl}/success.html`,
             cancelUrl: `${baseUrl}/cancel.html`,
         });
     });
 
-    plusBtn.addEventListener('click', () => {
-        quantity++;
-        quantityDisplay.textContent = quantity;
-    });
-
-    minusBtn.addEventListener('click', () => {
-        if (quantity > 1) {
-            quantity--;
-            quantityDisplay.textContent = quantity;
-        }
-    });
+    plusBtn.addEventListener('click', () => { quantity++; quantityDisplay.textContent = quantity; });
+    minusBtn.addEventListener('click', () => { if (quantity > 1) { quantity--; quantityDisplay.textContent = quantity; } });
 
     addToCartBtn.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -156,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     });
     
-    // --- Initialize Page ---
     fetchProductData();
     updateCartCount();
 });
