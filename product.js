@@ -13,11 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- The rest of the file is the same, but the fetch URL is now dynamic ---
     let currentProduct = {};
-    const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
-    const cartModal = document.getElementById('cart-modal');
-    // ... (include all your modal and cart variables here)
-    // ---
     
+    // --- START: ADDED MISSING VARIABLE DEFINITIONS ---
+    const mainImage = document.getElementById('main-product-image');
+    const cartCountElement = document.getElementById('cart-count');
+    // Note: If you have a clickable modal, its variables would go here too.
+    // const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
+    // const cartModal = document.getElementById('cart-modal');
+    // --- END: ADDED MISSING VARIABLE DEFINITIONS ---
+    
+    // --- START: ADDED MISSING FUNCTION DEFINITION ---
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cartCountElement) {
+            cartCountElement.textContent = cart.length;
+        }
+    }
+    // --- END: ADDED MISSING FUNCTION DEFINITION ---
+
     async function fetchProductData() {
         try {
             // Use the productId from the URL to fetch the correct product
@@ -29,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-title').textContent = currentProduct.title;
             document.getElementById('product-description').textContent = currentProduct.description;
             document.getElementById('product-price').textContent = `$${currentProduct.price}`;
-            document.getElementById('main-product-image').src = currentProduct.image;
+            mainImage.src = currentProduct.image;
         } catch (error) {
             console.error('Error fetching product data:', error);
         }
@@ -37,12 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProductData();
 
     // --- 2. INTERACTIVITY: IMAGE GALLERY & QUANTITY ---
-    // (This section remains unchanged)
     const thumbnails = document.querySelectorAll('.thumbnail');
     thumbnails.forEach(thumb => {
         thumb.addEventListener('click', function() {
             const fullImageSrc = this.getAttribute('data-full');
-            mainImage.src = fullImageSrc;
+            mainImage.src = fullImageSrc; // This now works because mainImage is defined
             thumbnails.forEach(t => t.classList.replace('border-blue-500', 'border-transparent'));
             this.classList.replace('border-transparent', 'border-blue-500');
         });
@@ -65,19 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 3. PERSISTENT CART: WITH UPDATED LOGIC ---
-    // (This section has been updated)
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     addToCartBtn.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         
-        // Check if the product is already in the cart
         const existingItemIndex = cart.findIndex(item => item.id === currentProduct.id);
 
         if (existingItemIndex > -1) {
-            // If it exists, just update the quantity
             cart[existingItemIndex].quantity += quantity;
         } else {
-            // If it doesn't exist, add it as a new item
             const newItem = {
                 id: currentProduct.id,
                 title: currentProduct.title,
@@ -89,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
+        updateCartCount(); // This now works because the function is defined
 
         // Visual feedback for the button
         addToCartBtn.textContent = 'Added! ✅';
@@ -103,5 +111,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // --- Initialize cart count on page load ---
-    updateCartCount();
+    updateCartCount(); // This also now works
 });
