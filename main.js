@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentProduct = {};
 
-    // --- NEW: Select all modal and cart elements ---
+    // --- Select all modal and cart elements ---
     const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
     const cartModal = document.getElementById('cart-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -10,21 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartTotalElement = document.getElementById('cart-total');
     const cartCountElement = document.getElementById('cart-count');
 
-    // --- NEW: Function to open/show the modal ---
+    // --- Modal and Cart Display Functions ---
     function openCartModal() {
-        populateCartModal(); // First, fill it with the latest cart items
-        cartModal.classList.remove('hidden'); // Then, show it
+        populateCartModal();
+        cartModal.classList.remove('hidden');
     }
 
-    // --- NEW: Function to close the modal ---
     function closeCartModal() {
         cartModal.classList.add('hidden');
     }
 
-    // --- NEW: Function to populate the modal with items from localStorage ---
     function populateCartModal() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cartItemsContainer.innerHTML = ''; // Clear old items first
+        cartItemsContainer.innerHTML = '';
         let total = 0;
 
         if (cart.length === 0) {
@@ -45,14 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cartTotalElement.textContent = `$${total.toFixed(2)}`;
     }
 
-
-    // --- Function to update the cart count bubble ---
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // To show the count of unique items, not total quantity
         cartCountElement.textContent = cart.length;
     }
     
-    // --- NEW: Add event listeners for the modal ---
+    // --- Add event listeners for the modal ---
     cartIcon.addEventListener('click', openCartModal);
     closeModalBtn.addEventListener('click', closeCartModal);
 
@@ -107,17 +104,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 3. PERSISTENT CART: USING LOCALSTORAGE ---
-    // (This section remains unchanged)
+    // --- 3. PERSISTENT CART: WITH UPDATED LOGIC ---
+    // (This section has been updated)
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     addToCartBtn.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const newItem = { id: currentProduct.id, title: currentProduct.title, price: currentProduct.price, image: currentProduct.image, quantity: quantity };
-        cart.push(newItem);
-        localStorage.setItem('cart', JSON.stringify(cart));
         
-        updateCartCount(); // Update the count bubble
+        // Check if the product is already in the cart
+        const existingItemIndex = cart.findIndex(item => item.id === currentProduct.id);
 
+        if (existingItemIndex > -1) {
+            // If it exists, just update the quantity
+            cart[existingItemIndex].quantity += quantity;
+        } else {
+            // If it doesn't exist, add it as a new item
+            const newItem = {
+                id: currentProduct.id,
+                title: currentProduct.title,
+                price: currentProduct.price,
+                image: currentProduct.image,
+                quantity: quantity
+            };
+            cart.push(newItem);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+
+        // Visual feedback for the button
         addToCartBtn.textContent = 'Added! ✅';
         addToCartBtn.classList.replace('bg-blue-600', 'bg-green-500');
         addToCartBtn.disabled = true;
