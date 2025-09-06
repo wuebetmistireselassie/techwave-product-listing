@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- START: Stripe Setup with your key ---
+    // --- Stripe Setup ---
     const stripe = Stripe('pk_test_51S4RkX6P8IFPS9iHyfDjDb04RhvAh8Ch0nIR0eOy4zRRlvoGDpPP0zq0TywzuinNxLEjlU0kgqsodti0pNX7xZ9900CbqPUtb3');
-    // --- END: Stripe Setup ---
-
+    
+    // --- URL Parameter Logic ---
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
     const cartModal = document.getElementById('cart-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
-    const checkoutButton = document.getElementById('checkout-btn');
+    const checkoutButton = document.getElementById('checkout-btn'); // This line is crucial
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartTotalElement = document.getElementById('cart-total');
     const cartCountElement = document.getElementById('cart-count');
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
         
-        // Build the base URL to make sure redirects work correctly
         const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
 
         stripe.redirectToCheckout({
@@ -106,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 1. DYNAMIC DATA: FETCHING FROM API ---
+    // --- DYNAMIC DATA: FETCHING FROM API ---
     async function fetchProductData() {
         try {
             const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
@@ -121,9 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-title').textContent = 'Failed to load product details.';
         }
     }
-    fetchProductData();
-
-    // --- 2. INTERACTIVITY: IMAGE GALLERY & QUANTITY ---
+    
+    // --- INTERACTIVITY: IMAGE GALLERY & QUANTITY ---
     const thumbnails = document.querySelectorAll('.thumbnail');
     thumbnails.forEach(thumb => {
         thumb.addEventListener('click', function() {
@@ -150,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 3. PERSISTENT CART: WITH UPDATED LOGIC ---
+    // --- PERSISTENT CART: WITH UPDATED LOGIC ---
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     addToCartBtn.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -174,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     });
     
-    // --- Initialize cart count on page load ---
+    // --- Initialize Page ---
+    fetchProductData();
     updateCartCount();
 });
