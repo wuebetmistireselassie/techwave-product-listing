@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- START: Stripe Setup ---
     // Replace with your own Publishable key from your Stripe dashboard
-    const stripe = Stripe('pk_test_51...YOUR_PUBLISHABLE_KEY'); 
+    const stripe = Stripe('pk_test_51S4RkX6P8IFPS9iHyfDjDb04RhvAh8Ch0nIR0eOy4zRRlvoGDpPP0zq0TywzuinNxLEjlU0kgqsodti0pNX7xZ9900CbqPUtb3'); 
     const checkoutButton = document.getElementById('checkout-btn');
     // --- END: Stripe Setup ---
 
