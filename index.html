@@ -74,6 +74,20 @@
         </div>
     </div>
 
-    <script src="main.js"></script>
-</body>
+   <script src="main.js"></script>
+
+    <div id="cart-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Your Cart</h2>
+                <button id="close-modal-btn" class="text-2xl font-bold">&times;</button>
+            </div>
+            <div id="cart-items-container" class="space-y-4">
+                </div>
+            <div class="mt-6 text-right">
+                <p class="text-xl font-bold">Total: <span id="cart-total">$0.00</span></p>
+            </div>
+        </div>
+    </div>
+    </body>
 </html>
