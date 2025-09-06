@@ -1,77 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // This is the new, crucial part:
+    // 1. Get the current URL's query string (e.g., "?id=5")
+    const urlParams = new URLSearchParams(window.location.search);
+    // 2. Get the value of the 'id' parameter
+    const productId = urlParams.get('id');
 
+    // If there's no ID in the URL, we can't show a product
+    if (!productId) {
+        document.getElementById('product-title').textContent = 'Product not found!';
+        return;
+    }
+
+    // --- The rest of the file is the same, but the fetch URL is now dynamic ---
     let currentProduct = {};
-
-    // --- Select all modal and cart elements ---
     const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
     const cartModal = document.getElementById('cart-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const cartItemsContainer = document.getElementById('cart-items-container');
-    const cartTotalElement = document.getElementById('cart-total');
-    const cartCountElement = document.getElementById('cart-count');
-
-    // --- Modal and Cart Display Functions ---
-    function openCartModal() {
-        populateCartModal();
-        cartModal.classList.remove('hidden');
-    }
-
-    function closeCartModal() {
-        cartModal.classList.add('hidden');
-    }
-
-    function populateCartModal() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cartItemsContainer.innerHTML = '';
-        let total = 0;
-
-        if (cart.length === 0) {
-            cartItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
-        } else {
-            cart.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'flex justify-between items-center border-b pb-2 text-sm';
-                itemElement.innerHTML = `
-                    <img src="${item.image}" class="w-12 h-12 object-contain mr-2">
-                    <span class="font-semibold flex-grow">${item.title.substring(0, 25)}...</span>
-                    <span class="mx-2">${item.quantity} x $${item.price}</span>
-                `;
-                cartItemsContainer.appendChild(itemElement);
-                total += item.price * item.quantity;
-            });
-        }
-        cartTotalElement.textContent = `$${total.toFixed(2)}`;
-    }
-
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        // To show the count of unique items, not total quantity
-        cartCountElement.textContent = cart.length;
-    }
+    // ... (include all your modal and cart variables here)
+    // ---
     
-    // --- Add event listeners for the modal ---
-    cartIcon.addEventListener('click', openCartModal);
-    closeModalBtn.addEventListener('click', closeCartModal);
-
-    // --- 1. DYNAMIC DATA: FETCHING FROM API ---
-    // (This section remains unchanged)
-    const productTitle = document.getElementById('product-title');
-    const productDescription = document.getElementById('product-description');
-    const productPrice = document.getElementById('product-price');
-    const mainImage = document.getElementById('main-product-image');
-
     async function fetchProductData() {
         try {
-            const response = await fetch('https://fakestoreapi.com/products/14');
+            // Use the productId from the URL to fetch the correct product
+            const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
             const product = await response.json();
+            
+            // The rest of your code works the same as before!
             currentProduct = { id: product.id, title: product.title, price: product.price, image: product.image, description: product.description };
-            productTitle.textContent = currentProduct.title;
-            productDescription.textContent = currentProduct.description;
-            productPrice.textContent = `$${currentProduct.price}`;
-            mainImage.src = currentProduct.image;
+            document.getElementById('product-title').textContent = currentProduct.title;
+            document.getElementById('product-description').textContent = currentProduct.description;
+            document.getElementById('product-price').textContent = `$${currentProduct.price}`;
+            document.getElementById('main-product-image').src = currentProduct.image;
         } catch (error) {
             console.error('Error fetching product data:', error);
-            productTitle.textContent = 'Failed to load product details.';
         }
     }
     fetchProductData();
