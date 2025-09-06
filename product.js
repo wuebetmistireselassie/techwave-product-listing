@@ -1,43 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // This is the new, crucial part:
-    // 1. Get the current URL's query string (e.g., "?id=5")
     const urlParams = new URLSearchParams(window.location.search);
-    // 2. Get the value of the 'id' parameter
     const productId = urlParams.get('id');
 
-    // If there's no ID in the URL, we can't show a product
     if (!productId) {
         document.getElementById('product-title').textContent = 'Product not found!';
         return;
     }
 
-    // --- The rest of the file is the same, but the fetch URL is now dynamic ---
     let currentProduct = {};
-    
-    // --- START: ADDED MISSING VARIABLE DEFINITIONS ---
+
+    // --- All Modal and Cart Elements ---
     const mainImage = document.getElementById('main-product-image');
+    const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
+    const cartModal = document.getElementById('cart-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartTotalElement = document.getElementById('cart-total');
     const cartCountElement = document.getElementById('cart-count');
-    // Note: If you have a clickable modal, its variables would go here too.
-    // const cartIcon = document.querySelector('.fa-shopping-cart').parentElement;
-    // const cartModal = document.getElementById('cart-modal');
-    // --- END: ADDED MISSING VARIABLE DEFINITIONS ---
-    
-    // --- START: ADDED MISSING FUNCTION DEFINITION ---
+
+    // --- Modal and Cart Display Functions ---
+    function openCartModal() {
+        populateCartModal();
+        cartModal.classList.remove('hidden');
+    }
+
+    function closeCartModal() {
+        cartModal.classList.add('hidden');
+    }
+
+    function populateCartModal() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+        } else {
+            cart.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex justify-between items-center border-b pb-2 text-sm';
+                // --- UPDATE: Added a remove button with a data-index attribute ---
+                itemElement.innerHTML = `
+                    <img src="${item.image}" class="w-12 h-12 object-contain mr-2">
+                    <span class="font-semibold flex-grow">${item.title.substring(0, 25)}...</span>
+                    <span class="mx-2">${item.quantity} x $${item.price}</span>
+                    <button class="remove-item-btn text-red-500 hover:text-red-700 font-bold" data-index="${index}">&times;</button>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+                total += item.price * item.quantity;
+            });
+        }
+        cartTotalElement.textContent = `$${total.toFixed(2)}`;
+        
+        // --- NEW: Add event listeners to the new remove buttons ---
+        document.querySelectorAll('.remove-item-btn').forEach(button => {
+            button.addEventListener('click', handleRemoveItem);
+        });
+    }
+
+    // --- NEW: Function to handle removing an item from the cart ---
+    function handleRemoveItem(event) {
+        const itemIndex = parseInt(event.target.getAttribute('data-index'));
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Remove the item at the specified index from the array
+        cart.splice(itemIndex, 1);
+        
+        // Save the modified cart back to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Refresh the cart display
+        updateCartCount();
+        populateCartModal(); // Re-populate the modal to show the change instantly
+    }
+
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cartCountElement) {
-            cartCountElement.textContent = cart.length;
-        }
+        cartCountElement.textContent = cart.length;
     }
-    // --- END: ADDED MISSING FUNCTION DEFINITION ---
+    
+    // --- Add event listeners for the modal ---
+    cartIcon.addEventListener('click', openCartModal);
+    closeModalBtn.addEventListener('click', closeCartModal);
 
+    // --- 1. DYNAMIC DATA: FETCHING FROM API ---
     async function fetchProductData() {
         try {
-            // Use the productId from the URL to fetch the correct product
             const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
             const product = await response.json();
-            
-            // The rest of your code works the same as before!
             currentProduct = { id: product.id, title: product.title, price: product.price, image: product.image, description: product.description };
             document.getElementById('product-title').textContent = currentProduct.title;
             document.getElementById('product-description').textContent = currentProduct.description;
@@ -45,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mainImage.src = currentProduct.image;
         } catch (error) {
             console.error('Error fetching product data:', error);
+            productTitle.textContent = 'Failed to load product details.';
         }
     }
     fetchProductData();
@@ -54,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     thumbnails.forEach(thumb => {
         thumb.addEventListener('click', function() {
             const fullImageSrc = this.getAttribute('data-full');
-            mainImage.src = fullImageSrc; // This now works because mainImage is defined
+            mainImage.src = fullImageSrc;
             thumbnails.forEach(t => t.classList.replace('border-blue-500', 'border-transparent'));
             this.classList.replace('border-transparent', 'border-blue-500');
         });
@@ -80,26 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const addToCartBtn = document.getElementById('add-to-cart-btn');
     addToCartBtn.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
         const existingItemIndex = cart.findIndex(item => item.id === currentProduct.id);
-
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += quantity;
         } else {
-            const newItem = {
-                id: currentProduct.id,
-                title: currentProduct.title,
-                price: currentProduct.price,
-                image: currentProduct.image,
-                quantity: quantity
-            };
+            const newItem = { id: currentProduct.id, title: currentProduct.title, price: currentProduct.price, image: currentProduct.image, quantity: quantity };
             cart.push(newItem);
         }
-        
         localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount(); // This now works because the function is defined
+        updateCartCount();
 
-        // Visual feedback for the button
         addToCartBtn.textContent = 'Added! ✅';
         addToCartBtn.classList.replace('bg-blue-600', 'bg-green-500');
         addToCartBtn.disabled = true;
@@ -111,5 +152,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // --- Initialize cart count on page load ---
-    updateCartCount(); // This also now works
+    updateCartCount();
 });
