@@ -110,9 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             quantity: item.quantity,
         }));
+        
         const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+
+        // --- THE FIX IS HERE ---
+        // The parameter must be 'lineItems', not 'line_items' or 'items'.
         stripe.redirectToCheckout({
-            lineItems: line_items,
+            lineItems: line_items, // Corrected from 'line_items'
             mode: 'payment',
             successUrl: `${baseUrl}/success.html`,
             cancelUrl: `${baseUrl}/cancel.html`,
